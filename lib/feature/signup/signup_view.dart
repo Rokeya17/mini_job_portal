@@ -178,7 +178,10 @@ class SignupView extends GetView<SignupController> {
         borderSide: BorderSide(color: Colors.red.shade400, width: 2),
         borderRadius: BorderRadius.circular(8),
       ),
-      errorStyle: TextStyle(color: Colors.red.shade200),
+      errorStyle: TextStyle(
+        color: const Color.fromARGB(255, 178, 19, 7),
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }
