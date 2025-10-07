@@ -103,7 +103,7 @@ class SignupView extends GetView<SignupController> {
                                 r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
                               );
                               if (!passwordRegex.hasMatch(v!)) {
-                                return 'Password must contain at least 8 characters, including uppercase, lowercase, digit, and special character.';
+                                return 'Password must contain at least:\n• 8 characters\n• One uppercase letter\n• One lowercase letter\n• One number\n• One special character';
                               }
                               return null;
                             },
