@@ -1,31 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/auth_controller.dart';
+import 'signup_controller.dart';
 
-class SignupView extends StatefulWidget {
+class SignupView extends GetView<SignupController> {
   const SignupView({super.key});
 
   @override
-  State<SignupView> createState() => _SignupViewState();
-}
-
-class _SignupViewState extends State<SignupView> {
-  final _emailController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _nameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final auth = Get.find<AuthController>();
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -50,123 +32,120 @@ class _SignupViewState extends State<SignupView> {
                       borderRadius: BorderRadius.circular(20.0),
                       border: Border.all(color: Colors.white.withOpacity(0.2)),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'Create Account',
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Start your journey with us!',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(color: Colors.black87),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        TextField(
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          style: const TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Full Name',
-                            labelStyle: const TextStyle(color: Colors.black87),
-                            prefixIcon: const Icon(
+                    child: Form(
+                      key: controller.formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Create Account',
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Start your journey with us!',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: Colors.black87),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 32),
+                          TextFormField(
+                            controller: controller.nameController,
+                            keyboardType: TextInputType.name,
+                            style: const TextStyle(color: Colors.black),
+                            decoration: _inputDecoration(
+                              'Full Name',
                               Icons.person_outline,
-                              color: Colors.black87,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.3),
-                              ),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
+                            validator: (v) => (v?.isEmpty ?? true)
+                                ? 'Name is required'
+                                : null,
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle: const TextStyle(color: Colors.black87),
-                            prefixIcon: const Icon(
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: controller.emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: const TextStyle(color: Colors.black),
+                            decoration: _inputDecoration(
+                              'Email',
                               Icons.email_outlined,
-                              color: Colors.black87,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.3),
-                              ),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
+                            validator: (v) {
+                              if (v?.isEmpty ?? true) {
+                                return 'Email is required';
+                              }
+                              if (!GetUtils.isEmail(v!)) {
+                                return 'Please enter a valid email';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _passwordController,
-                          style: const TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: const TextStyle(color: Colors.black),
-                            prefixIcon: const Icon(
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: controller.passwordController,
+                            style: const TextStyle(color: Colors.black),
+                            decoration: _inputDecoration(
+                              'Password',
                               Icons.lock_outline,
-                              color: Colors.black87,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.black.withOpacity(0.3),
+                            obscureText: true,
+                            validator: (v) {
+                              if (v?.isEmpty ?? true) {
+                                return 'Password is required';
+                              }
+                              final passwordRegex = RegExp(
+                                r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
+                              );
+                              if (!passwordRegex.hasMatch(v!)) {
+                                return 'Password must contain at least 8 characters, including uppercase, lowercase, digit, and special character.';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          Obx(
+                            () => ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black.withOpacity(0.8),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          obscureText: true,
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black.withOpacity(0.8),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              onPressed: controller.isLoading.value
+                                  ? null
+                                  : controller.signup,
+                              child: controller.isLoading.value
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Text('Sign Up'),
                             ),
                           ),
-                          onPressed: () async {
-                            final ok = await auth.signup(
-                              _nameController.text.trim(),
-                              _emailController.text.trim(),
-                              _passwordController.text.trim(),
-                            );
-                            if (!ok && context.mounted) {
-                              Get.snackbar('Error', 'Could not create user.');
-                            }
-                          },
-                          child: const Text('Sign Up'),
-                        ),
-                        const SizedBox(height: 16),
-                        TextButton(
-                          onPressed: () => Get.offNamed('/login'),
-                          child: const Text(
-                            'Already have an account? Log In',
-                            style: TextStyle(color: Colors.black),
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: () => Get.offNamed('/login'),
+                            child: const Text(
+                              'Already have an account? Log In',
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -175,6 +154,31 @@ class _SignupViewState extends State<SignupView> {
           ),
         ),
       ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.black87),
+      prefixIcon: Icon(icon, color: Colors.black87),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.white, width: 2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red.shade400),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red.shade400, width: 2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      errorStyle: TextStyle(color: Colors.red.shade200),
     );
   }
 }

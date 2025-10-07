@@ -25,14 +25,6 @@ class ProfileView extends StatelessWidget {
             fontSize: 22,
           ),
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black87),
-            tooltip: 'Logout',
-            onPressed: () => authC.logout(),
-          ),
-        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -78,32 +70,45 @@ class ProfileView extends StatelessWidget {
                           color: Colors.black54,
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.black12),
-                          gradient: LinearGradient(
-                            colors: [Colors.white, Colors.blue.shade100],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: Obx(
-                          () => Text(
-                            'Saved Jobs: ${savedC.saved.length}',
-                            style: const TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   );
                 }),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black12),
+                    gradient: LinearGradient(
+                      colors: [Colors.white, Colors.blue.shade100],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Obx(
+                    () => Text(
+                      'Saved Jobs: ${savedC.saved.length}',
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => authC.logout(),
+                    icon: const Icon(Icons.logout),
+                    label: const Text('Logout'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.red.shade700,
+                      backgroundColor: Colors.red.shade100.withOpacity(0.5),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
